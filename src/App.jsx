@@ -3,7 +3,7 @@ import clickSound from "./assets/click.mp3";
 import winSoundFile from "./assets/win.mp3";
 import "./App.css";
 
-const DRAW_RESTART_MS = 580;
+const DRAW_RESTART_MS = 1000;
 
 function App() {
   const [board, setBoard] = useState(Array(9).fill(null));
@@ -11,19 +11,26 @@ function App() {
   const [winner, setWinner] = useState("");
   const [screen, setScreen] = useState("menu");
   const [boardKey, setBoardKey] = useState(0);
+  const [drawPop, setDrawPop] = useState(false);
 
   const isDraw = board.every((c) => c !== null) && !winner;
 
   useEffect(() => {
     if (!isDraw) return;
     const t = setTimeout(() => {
-      setBoardKey((k) => k + 1);
       setBoard(Array(9).fill(null));
       setTurn("X");
       setWinner("");
+      setDrawPop(true);
     }, DRAW_RESTART_MS);
     return () => clearTimeout(t);
   }, [isDraw]);
+
+  useEffect(() => {
+    if (!drawPop) return;
+    const t = setTimeout(() => setDrawPop(false), 320);
+    return () => clearTimeout(t);
+  }, [drawPop]);
 
   const moveSound = new Audio(clickSound);
   moveSound.volume = 0.3;
@@ -152,7 +159,7 @@ function App() {
 
           <div
             key={boardKey}
-            className={`grid grid-cols-3 grid-rows-3 w-72 h-72 gap-1 border-gray-300 p-1 ${boardKey > 0 ? "board-mount" : ""} ${isDraw ? "board-draw-pulse" : ""}`}
+            className={`grid grid-cols-3 grid-rows-3 w-72 h-72 gap-1 border-gray-300 p-1 ${drawPop ? "animate-[pop_0.3s_ease-out_forwards]" : boardKey > 0 ? "board-mount" : ""}`}
           >
             {cells}
           </div>
