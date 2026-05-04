@@ -3,7 +3,6 @@ import clickSound from "./assets/click.mp3";
 import winSoundFile from "./assets/win.mp3";
 import "./App.css";
 
-/** Matches `board-draw-out` duration in App.css */
 const DRAW_RESTART_MS = 580;
 
 function App() {
