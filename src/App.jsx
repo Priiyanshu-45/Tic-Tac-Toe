@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import clickSound from "./assets/click.mp3";
 import winSoundFile from "./assets/win.mp3";
 import "./App.css";
+import { useRef } from "react";
 
 const DRAW_RESTART_MS = 580;
 
@@ -25,20 +26,25 @@ function App() {
     return () => clearTimeout(t);
   }, [isDraw]);
 
-  const moveSound = new Audio(clickSound);
-  moveSound.volume = 0.3;
-  moveSound.playbackRate = 1.5;
-  const winSound = new Audio(winSoundFile);
+  
+  const moveSound = useRef(new Audio(clickSound))
+  const winSound = useRef(new Audio(winSoundFile))
+
+  useEffect(() => {
+    moveSound.current.volume = 0.4;
+    moveSound.current.playbackRate = 1.5;
+  }, [])
 
   function moved(i) {
     if (board[i] === null) {
-      moveSound.play();
+      moveSound.current.currentTime = 0;  
+      moveSound.current.play();
       let newBoard = [...board];
       newBoard[i] = turn;
       setBoard(newBoard);
       if (isWinner(newBoard, turn)) {
-        moveSound.pause();
-        winSound.play();
+        moveSound.current.pause();
+        winSound.current.play();
         setWinner(turn);
       }
       setTurn((prev) => {
@@ -76,7 +82,8 @@ function App() {
   }
 
   function restart() {
-    moveSound.play();
+    moveSound.current.currentTime = 0;
+    moveSound.current.play();
     setBoardKey((k) => k + 1);
     setBoard(Array(9).fill(null));
     setTurn("X");
@@ -103,7 +110,8 @@ function App() {
           <button
             className="border-2 px-1 py-2 rounded-3xl mt-5 mb-3 hover:scale-110 duration-250 hover:bg-green-500 border-green-500 hover:text-mist-800 hover:border-white"
             onClick={() => {
-              moveSound.play();
+              moveSound.current.currentTime = 0;
+              moveSound.current.play();
               setScreen("game_offline");
             }}
           >
@@ -112,7 +120,8 @@ function App() {
           <button
             className="border-2 px-1 py-2 rounded-3xl mb-3 hover:scale-110 duration-250 hover:bg-green-500 border-green-500 hover:text-mist-800 hover:border-white"
             onClick={() => {
-              moveSound.play();
+              moveSound.current.currentTime = 0;
+              moveSound.current.play();
               setScreen("game_online");
             }}
           >
@@ -129,7 +138,8 @@ function App() {
         <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-4">
           <button
             onClick={() => {
-              moveSound.play();
+              moveSound.current.currentTime = 0;
+              moveSound.current.play();
               setScreen("menu");
             }}
             className="w-72 rounded-2xl border-2 border-green-500 py-2 text-sm hover:bg-green-500 hover:font-semibold hover:text-mist-900 hover:border-white hover:scale-110 duration-250"
@@ -181,7 +191,8 @@ function App() {
         <div className="flex flex-col w-72 h-72 rounded-2xl p-5 bg-black gap-10 justify-center">
           <button
             onClick={() => {
-              moveSound.play();
+              moveSound.current.currentTime = 0;
+              moveSound.current.play();
               setScreen("menu");
             }}
             className=" rounded-2xl border-2 border-green-500 py-2 text-sm hover:bg-green-500 hover:font-semibold hover:text-mist-900 hover:border-white hover:scale-110 duration-250"
