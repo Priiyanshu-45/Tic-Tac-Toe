@@ -3,11 +3,28 @@ import clickSound from "./assets/click.mp3";
 import winSoundFile from "./assets/win.mp3";
 import "./App.css";
 
+/** Matches `board-draw-out` duration in App.css */
+const DRAW_RESTART_MS = 580;
+
 function App() {
   const [board, setBoard] = useState(Array(9).fill(null));
   const [turn, setTurn] = useState("X");
   const [winner, setWinner] = useState("");
   const [screen, setScreen] = useState("menu");
+  const [boardKey, setBoardKey] = useState(0);
+
+  const isDraw = board.every((c) => c !== null) && !winner;
+
+  useEffect(() => {
+    if (!isDraw) return;
+    const t = setTimeout(() => {
+      setBoardKey((k) => k + 1);
+      setBoard(Array(9).fill(null));
+      setTurn("X");
+      setWinner("");
+    }, DRAW_RESTART_MS);
+    return () => clearTimeout(t);
+  }, [isDraw]);
 
   const moveSound = new Audio(clickSound);
   moveSound.volume = 0.3;
@@ -61,6 +78,7 @@ function App() {
 
   function restart() {
     moveSound.play();
+    setBoardKey((k) => k + 1);
     setBoard(Array(9).fill(null));
     setTurn("X");
     setWinner("");
@@ -133,7 +151,10 @@ function App() {
             </span>
           </div>
 
-          <div className="grid grid-cols-3 grid-rows-3 w-72 h-72 gap-1 border-gray-300 p-1">
+          <div
+            key={boardKey}
+            className={`grid grid-cols-3 grid-rows-3 w-72 h-72 gap-1 border-gray-300 p-1 ${boardKey > 0 ? "board-mount" : ""} ${isDraw ? "board-draw-pulse" : ""}`}
+          >
             {cells}
           </div>
         </div>
